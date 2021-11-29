@@ -16,7 +16,12 @@ function Task(props) {
 	}
 
 	const editingTemplate = (
-		<li className="task">
+		<li
+			className="task"
+			ref={props.provided.innerRef}
+			{...props.provided.draggableProps}
+			{...props.provided.dragHandleProps}
+		>
 			<form onSubmit={handleSubmit}>
 				<button
 					type="button"
@@ -53,7 +58,12 @@ function Task(props) {
 	);
 
 	const viewTemplate = (
-		<li className="task">
+		<li
+			className="task"
+			ref={props.provided.innerRef}
+			{...props.provided.draggableProps}
+			{...props.provided.dragHandleProps}
+		>
 			<button
 				type="button"
 				className="complete-task-button"

@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import "./css/App.css";
-import Jotbox from "./Jotbox";
 import Header from "./Header";
+import Jotbox from "./Jotbox";
+import Schedule from "./Schedule";
 import { nanoid } from "nanoid";
 
 const LOCAL_STORAGE_KEY = "jotter.tasks";
@@ -40,6 +41,15 @@ function App(props) {
 		}
 	}
 
+	function handleOnDragEnd(result) {
+		if (!result.destination) return;
+		const tasksClone = Array.from(tasks);
+		const [reorderedTask] = tasksClone.splice(result.source.index, 1);
+		tasksClone.splice(result.destination.index, 0, reorderedTask);
+
+		setTasks(tasksClone);
+	}
+
 	function sortTasks() {
 		const incompleteTasks = tasks.filter((task) => !task.completed);
 		const completedTasks = tasks.filter((task) => task.completed);
@@ -65,8 +75,10 @@ function App(props) {
 				deleteTask={deleteTask}
 				saveTask={saveTask}
 				completeTask={completeTask}
+				handleOnDragEnd={handleOnDragEnd}
 				sortTasks={sortTasks}
 			/>
+			<Schedule />
 		</div>
 	);
 }
