@@ -9,16 +9,17 @@ const LOCAL_STORAGE_KEY = "jotter.tasks";
 
 function App(props) {
 	const [tasks, setTasks] = useState([]);
+	const [events, setEvents] = useState([]);
 
 	function addTask(desc) {
 		const newTask = { id: "task-" + nanoid(), desc: desc, completed: false };
 		setTasks([...tasks, newTask]);
 	}
 
-	function saveTask(id, desc) {
+	function saveTask(id, desc, sdt, edt) {
 		const updatedTasks = tasks.map((task) => {
 			if (id === task.id) {
-				return { ...task, desc: desc };
+				return { ...task, desc: desc, sdt: sdt, edt: edt };
 			}
 			return task;
 		});
@@ -78,7 +79,7 @@ function App(props) {
 				handleOnDragEnd={handleOnDragEnd}
 				sortTasks={sortTasks}
 			/>
-			<Schedule />
+			<Schedule tasks={tasks} />
 		</div>
 	);
 }

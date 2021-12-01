@@ -1,25 +1,4 @@
 .schedule {
-	background-color: #d6d6d6;
 	width: 25em;
 	min-height: 25em;
-}
-
-.title-schedule {
-	text-align: center;
-	font-family: Verdana, Geneva, Tahoma, sans-serif;
-}
-
-.add-task-input {
-	width: 100%;
-}
-
-.add-task-form {
-	display: flex;
-	margin: 1em;
-}
-
-ul {
-	padding: 0;
-	padding-bottom: 1em;
-	margin: 1em;
 }
