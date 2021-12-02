@@ -16,6 +16,17 @@ function App(props) {
 		setTasks([...tasks, newTask]);
 	}
 
+	function addTask2(added) {
+		const newTasks = added.map((task) => ({
+			id: "task-" + nanoid(),
+			desc: task.desc,
+			completed: false,
+			sdt: task.sdt,
+			edt: task.edt,
+		}));
+		setTasks([...tasks, ...newTasks]);
+	}
+
 	function saveTask(id, desc, sdt, edt) {
 		const updatedTasks = tasks.map((task) => {
 			if (id === task.id) {
@@ -23,6 +34,13 @@ function App(props) {
 			}
 			return task;
 		});
+		setTasks(updatedTasks);
+	}
+
+	function saveTask2(changed) {
+		const updatedTasks = tasks.map((task) =>
+			changed[task.id] ? { ...task, ...changed[task.id] } : task
+		);
 		setTasks(updatedTasks);
 	}
 
@@ -40,6 +58,12 @@ function App(props) {
 		if (window.confirm("Delete?")) {
 			setTasks(tasks.filter((task) => task.id !== id));
 		}
+	}
+
+	function deleteTask2(deleted) {
+		const deletedSet = new Set(deleted);
+		const changedTasks = tasks.filter((task) => !deletedSet.has(task.id));
+		setTasks(changedTasks);
 	}
 
 	function handleOnDragEnd(result) {
@@ -73,8 +97,11 @@ function App(props) {
 			<Jotbox
 				tasks={tasks}
 				addTask={addTask}
+				addTask2={addTask2}
 				deleteTask={deleteTask}
+				deleteTask2={deleteTask2}
 				saveTask={saveTask}
+				saveTask2={saveTask2}
 				completeTask={completeTask}
 				handleOnDragEnd={handleOnDragEnd}
 				sortTasks={sortTasks}

@@ -1,16 +1,26 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import Paper from "@material-ui/core/Paper";
+import { EditingState } from "@devexpress/dx-react-grid";
 import {
 	Grid,
 	Table,
 	TableHeaderRow,
+	TableEditRow,
+	TableEditColumn,
 } from "@devexpress/dx-react-grid-material-ui";
 import "./css/jotbox.css";
 import Task from "./Task";
+import { setWeekYearWithOptions } from "date-fns/fp";
+
+const getRowId = (row) => row.id;
 
 function Jotbox(props) {
 	const [input, setInput] = useState("");
+	const [columns] = useState([{ name: "desc", title: "Task" }]);
+	const [rows, setRows] = useState(
+		props.tasks.map((task) => ({ id: task.id, desc: task.desc }))
+	);
 
 	function handleChange(e) {
 		setInput(e.target.value);
@@ -22,8 +32,17 @@ function Jotbox(props) {
 		setInput("");
 	}
 
-	const columns = [{ name: "desc", title: "Task" }];
-	const rows = props.tasks.map((task) => ({ desc: task.desc }));
+	const commitChanges = ({ added, changed, deleted }) => {
+		if (added) {
+			props.addTask2(added);
+		}
+		if (changed) {
+			props.saveTask2(changed);
+		}
+		if (deleted) {
+			props.deleteTask2(deleted);
+		}
+	};
 
 	const taskList = props.tasks.map((task, index) => (
 		<Draggable key={task.id} draggableId={task.id} index={index}>
@@ -46,9 +65,12 @@ function Jotbox(props) {
 	return (
 		<div className="Jotbox">
 			<Paper>
-				<Grid rows={rows} columns={columns}>
+				<Grid rows={props.tasks} columns={columns} getRowId={getRowId}>
+					<EditingState onCommitChanges={commitChanges} />
 					<Table />
 					<TableHeaderRow />
+					<TableEditRow />
+					<TableEditColumn showAddCommand showEditCommand showDeleteCommand />
 				</Grid>
 
 				{/* todo: make separate form component */}
