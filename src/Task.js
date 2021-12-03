@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import "date-fns";
-import DateFnsUtils from "@date-io/date-fns";
 import TextField from "@mui/material/TextField";
 import AdapterDateFns from "@mui/lab/AdapterDateFns";
 import LocalizationProvider from "@mui/lab/LocalizationProvider";

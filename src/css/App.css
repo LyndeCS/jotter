@@ -1,4 +1,13 @@
 .App {
 	display: flex;
-	justify-content: space-evenly;
+	justify-content: space-between;
+}
+
+.Jotbox {
+	width: 50vw;
+	margin-right: 1em;
+}
+
+.schedule {
+	width: 50vw;
 }

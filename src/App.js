@@ -9,35 +9,20 @@ const LOCAL_STORAGE_KEY = "jotter.tasks";
 
 function App(props) {
 	const [tasks, setTasks] = useState([]);
-	const [events, setEvents] = useState([]);
 
-	function addTask(desc) {
-		const newTask = { id: "task-" + nanoid(), desc: desc, completed: false };
-		setTasks([...tasks, newTask]);
-	}
-
-	function addTask2(added) {
+	function addTask(added) {
+		const newDate = new Date();
 		const newTasks = added.map((task) => ({
 			id: "task-" + nanoid(),
 			desc: task.desc,
 			completed: false,
-			sdt: task.sdt,
-			edt: task.edt,
+			sdt: newDate.toString(),
+			edt: newDate.toString(),
 		}));
 		setTasks([...tasks, ...newTasks]);
 	}
 
-	function saveTask(id, desc, sdt, edt) {
-		const updatedTasks = tasks.map((task) => {
-			if (id === task.id) {
-				return { ...task, desc: desc, sdt: sdt, edt: edt };
-			}
-			return task;
-		});
-		setTasks(updatedTasks);
-	}
-
-	function saveTask2(changed) {
+	function updateTask(changed) {
 		const updatedTasks = tasks.map((task) =>
 			changed[task.id] ? { ...task, ...changed[task.id] } : task
 		);
@@ -54,13 +39,7 @@ function App(props) {
 		setTasks(updatedTasks);
 	}
 
-	function deleteTask(id) {
-		if (window.confirm("Delete?")) {
-			setTasks(tasks.filter((task) => task.id !== id));
-		}
-	}
-
-	function deleteTask2(deleted) {
+	function deleteTask(deleted) {
 		const deletedSet = new Set(deleted);
 		const changedTasks = tasks.filter((task) => !deletedSet.has(task.id));
 		setTasks(changedTasks);
@@ -97,11 +76,8 @@ function App(props) {
 			<Jotbox
 				tasks={tasks}
 				addTask={addTask}
-				addTask2={addTask2}
 				deleteTask={deleteTask}
-				deleteTask2={deleteTask2}
-				saveTask={saveTask}
-				saveTask2={saveTask2}
+				updateTask={updateTask}
 				completeTask={completeTask}
 				handleOnDragEnd={handleOnDragEnd}
 				sortTasks={sortTasks}

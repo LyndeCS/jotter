@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from "react";
-import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import React, { useState } from "react";
 import Paper from "@material-ui/core/Paper";
-import { EditingState } from "@devexpress/dx-react-grid";
+import { DataTypeProvider, EditingState } from "@devexpress/dx-react-grid";
 import {
 	Grid,
 	Table,
@@ -10,97 +9,74 @@ import {
 	TableEditColumn,
 } from "@devexpress/dx-react-grid-material-ui";
 import "./css/jotbox.css";
-import Task from "./Task";
-import { setWeekYearWithOptions } from "date-fns/fp";
+import DateTimePicker from "@mui/lab/DateTimePicker";
+import LocalizationProvider from "@mui/lab/LocalizationProvider";
+import AdapterDateFns from "@mui/lab/AdapterDateFns";
+import { TextField } from "@material-ui/core";
 
 const getRowId = (row) => row.id;
 
 function Jotbox(props) {
-	const [input, setInput] = useState("");
-	const [columns] = useState([{ name: "desc", title: "Task" }]);
-	const [rows, setRows] = useState(
-		props.tasks.map((task) => ({ id: task.id, desc: task.desc }))
+	const [columns] = useState([
+		{ name: "desc", title: "Task" },
+		{ name: "sdt", title: "Start Date" },
+		{ name: "edt", title: "End Date" },
+	]);
+	const [dateColumns] = useState(["sdt", "edt"]);
+	const [startDate, setStartDate] = useState(new Date());
+	//const [endDate, setEndDate] = useState(new Date());
+
+	const DateEditor = (props) => (
+		<LocalizationProvider dateAdapter={AdapterDateFns}>
+			<DateTimePicker
+				renderInput={(props) => <TextField {...props} />}
+				//label="Start Date"
+				value={startDate}
+				//onChange={handleDateChange}
+				onChange={(newValue) => {
+					setStartDate(newValue);
+				}}
+			/>
+		</LocalizationProvider>
 	);
 
-	function handleChange(e) {
-		setInput(e.target.value);
-	}
+	const DateTypeProvider = (props) => (
+		<DataTypeProvider
+			//formatterComponent={DateFormatter}
+			editorComponent={DateEditor}
+			{...props}
+		/>
+	);
 
-	function handleSubmit(e) {
-		e.preventDefault();
-		props.addTask(input);
-		setInput("");
-	}
+	// function handleDateChange(e) {
+	// 	console.log(e);
+	// 	setStartDate(e);
+	// }
 
 	const commitChanges = ({ added, changed, deleted }) => {
 		if (added) {
-			props.addTask2(added);
+			console.log(added);
+			props.addTask(added);
 		}
 		if (changed) {
-			props.saveTask2(changed);
+			props.updateTask(changed);
 		}
 		if (deleted) {
-			props.deleteTask2(deleted);
+			props.deleteTask(deleted);
 		}
 	};
-
-	const taskList = props.tasks.map((task, index) => (
-		<Draggable key={task.id} draggableId={task.id} index={index}>
-			{(provided) => (
-				<Task
-					provided={provided}
-					id={task.id}
-					desc={task.desc}
-					completed={task.completed}
-					sdt={task.sdt}
-					edt={task.edt}
-					completeTask={props.completeTask}
-					saveTask={props.saveTask}
-					deleteTask={props.deleteTask}
-				/>
-			)}
-		</Draggable>
-	));
 
 	return (
 		<div className="Jotbox">
 			<Paper>
 				<Grid rows={props.tasks} columns={columns} getRowId={getRowId}>
+					<DateTypeProvider for={dateColumns} />
 					<EditingState onCommitChanges={commitChanges} />
 					<Table />
 					<TableHeaderRow />
 					<TableEditRow />
 					<TableEditColumn showAddCommand showEditCommand showDeleteCommand />
 				</Grid>
-
-				{/* todo: make separate form component */}
-				<form className="add-task-form" onSubmit={handleSubmit}>
-					<input
-						type="text"
-						className="add-task-input"
-						value={input}
-						onChange={handleChange}
-					></input>
-					<button type="submit">Add</button>
-				</form>
-
-				<DragDropContext onDragEnd={props.handleOnDragEnd}>
-					<Droppable droppableId="tasks">
-						{(provided) => (
-							<ul
-								className="tasks"
-								{...provided.droppableProps}
-								ref={provided.innerRef}
-							>
-								{taskList}
-								{provided.placeholder}
-							</ul>
-						)}
-					</Droppable>
-				</DragDropContext>
-				<button type="button" onClick={props.sortTasks}>
-					Sort
-				</button>
 			</Paper>
 		</div>
 	);
